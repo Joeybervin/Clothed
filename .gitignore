@@ -9,7 +9,7 @@ client/node_modules
 client/dist
 
 #database
-clothed_database/
+clothed_database/clothed_database.sqlproj
 
 # Editor directories and files
 .vscode/*

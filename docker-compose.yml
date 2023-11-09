@@ -41,6 +41,7 @@ services:
     networks:
       - clothed-network
 
+
   api:
     build:
       context: ./api
@@ -55,6 +56,8 @@ services:
         condition: service_healthy
     ports:
       - 5555:5555
+    volumes:
+      - ./api:/app
     networks:
       - clothed-network
       

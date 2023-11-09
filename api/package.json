@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon"
+    "start": "nodemon --legacy-watch server.js"
   },
   "keywords": [],
   "author": "Bervin Joey",
