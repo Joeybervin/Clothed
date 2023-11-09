@@ -1,14 +1,64 @@
-version: '3'
+version: '3.8'
 services:
+
+  database:
+    image: postgres
+    container_name: clothed-postgres
+    env_file:
+      - ./api/.env
+    ports:
+      - 5432:5432
+    restart: on-failure
+    volumes:
+      - "./db/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql"
+    networks:
+      - clothed-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d clothed_db"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    container_name: clothed-amirer
+    image: adminer
+    depends_on:
+      - database
+    ports:
+      - 8080:8080
+    networks:
+      - clothed-network
+    
+
   client:
     build:
       context: ./client
       dockerfile: Dockerfile
-    container_name: clothed-client-container
+    container_name: clothed-client
     image: clothed-client-image
     ports:
-      - "5173:5173"
+      - 5173:5173
     networks:
       - clothed-network
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: clothed-api
+    image: clothed-api-image
+    restart: on-failure
+    env_file:
+      - ./api/.env
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - 5555:5555
+    networks:
+      - clothed-network
+      
+
+
 networks:
   clothed-network:

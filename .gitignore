@@ -1,16 +1,15 @@
-# client folder
-client/logs
-client/*.log
-client/npm-debug.log*
-client/yarn-debug.log*
-client/yarn-error.log*
-client/pnpm-debug.log*
-client/lerna-debug.log*
+# api folder
+api/logs
+api/node_modules
+api/dist
+api/.env
 
+# client folder
 client/node_modules
 client/dist
-client/dist-ssr
-client/*.local
+
+#database
+clothed_database/
 
 # Editor directories and files
 .vscode/*
