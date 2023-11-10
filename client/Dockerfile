@@ -1,6 +1,6 @@
-FROM node:lts-alpine
+FROM node:alpine
 
-RUN mkdir /app
+RUN mkdir -p /app
 WORKDIR /app
 
 COPY ./package*.json .

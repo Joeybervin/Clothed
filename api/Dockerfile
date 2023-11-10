@@ -1,9 +1,11 @@
 FROM node:lts-alpine
 
-RUN mkdir /app
+RUN npm install --global nodemon
+
 WORKDIR /app
 
-COPY ./package*.json .
+COPY package.json ./
+
 RUN npm install
 
 COPY . .

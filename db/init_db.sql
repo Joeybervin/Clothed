@@ -1,4 +1,6 @@
 
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TYPE product_category AS ENUM ('robes', 'chaussures', 'accessoires', 'hauts', 'bas', 'sacs', 'vestes', 'chemises', 'null');
 CREATE TYPE product_gender AS ENUM ('femme', 'homme', 'mixt');
 
@@ -38,34 +40,33 @@ INSERT INTO Products (name, price, inventory) VALUES
 CREATE TYPE list_of_role AS ENUM ('admin_plus', 'admin', 'customer');
 
 CREATE TABLE Users (
-    id SERIAL PRIMARY KEY,
-    token UUID UNIQUE NOT NULL,
+    id UUID DEFAULT Uuid_generate_v4() PRIMARY KEY,
+    token UUID DEFAULT Uuid_generate_v4(),
     first_name VARCHAR(20) NOT NULL,
     last_name VARCHAR(20),
     date_of_birth DATE,
-    email VARCHAR(35) UNIQUE NOT NULL,
-    address_info JSONB,
-    password VARCHAR(35) NOT NULL,
+    email VARCHAR(40) UNIQUE NOT NULL,
+    password VARCHAR(150) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_role list_of_role DEFAULT 'customer',
     payment_info JSONB
 );
 
 CREATE TABLE Cart (
-    id SERIAL PRIMARY KEY,
-    token UUID UNIQUE NOT NULL,
+    id UUID DEFAULT Uuid_generate_v4() PRIMARY KEY,
+    token UUID DEFAULT Uuid_generate_v4(),
     items JSON,
-    user_id INT UNIQUE,
+    user_id UUID UNIQUE,
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
 CREATE TYPE order_status AS ENUM('payé', 'en cours de préparation', 'expédié', 'en cours de livraison', 'livré', 'annulé', 'traitement de la demande en cours', 'remboursé');
 
 CREATE TABLE Orders (
-    id SERIAL PRIMARY KEY,
-    token UUID UNIQUE NOT NULL,
+    id UUID DEFAULT Uuid_generate_v4() PRIMARY KEY,
+    token UUID DEFAULT Uuid_generate_v4(),
     items TEXT[] NOT NULL,
-    user_id INT NOT NULL,
+    user_id UUID NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     delivery_date DATE,
@@ -76,8 +77,8 @@ CREATE TABLE Orders (
 );
 
 CREATE TABLE Coupons (
-    id SERIAL PRIMARY KEY,
-    token UUID UNIQUE NOT NULL,
+    id UUID DEFAULT Uuid_generate_v4() PRIMARY KEY,
+    token UUID DEFAULT Uuid_generate_v4(),
     details TEXT,
     cart_total_min INT,
     quantity INT,
@@ -90,13 +91,13 @@ CREATE TABLE Coupons (
 CREATE TYPE message_subject AS ENUM ('livraison', 'anulation', 'nos produits', 'ma commande', 'autre');
 
 CREATE TABLE Messages (
-    id SERIAL PRIMARY KEY,
-    token UUID UNIQUE NOT NULL,
+    id UUID DEFAULT Uuid_generate_v4() PRIMARY KEY,
+    token UUID DEFAULT Uuid_generate_v4(),
     title VARCHAR(50) NOT NULL,
     message_subject message_subject DEFAULT 'autre',
     details TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    order_id INT,
+    order_id UUID,
     user_email VARCHAR(35) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES Orders(id)
 );

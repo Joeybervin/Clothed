@@ -35,7 +35,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     container_name: clothed-client
-    image: clothed-client-image
+    image: clothed-client-img
     ports:
       - 5173:5173
     networks:
@@ -47,21 +47,20 @@ services:
       context: ./api
       dockerfile: Dockerfile
     container_name: clothed-api
-    image: clothed-api-image
+    image: clothed-api-img
     restart: on-failure
     env_file:
       - ./api/.env
+    ports:
+      - 5555:5555
     depends_on:
       database:
         condition: service_healthy
-    ports:
-      - 5555:5555
-    volumes:
-      - ./api:/app
     networks:
       - clothed-network
-      
-
+    volumes:
+      - /app/node_modules
+      - ./api:/app
 
 networks:
   clothed-network:

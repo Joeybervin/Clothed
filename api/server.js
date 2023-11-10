@@ -2,7 +2,7 @@ require('dotenv').config({ path: './.env' });
 const cors = require('cors');
 const express = require('express');
 const app = express();
-const port = process.env.API_PORT || 5555;
+const port = 5555;
 const productRouter = require('./routes/productRoutes.js');
 const userRouter = require('./routes/userRouter.js');
 const orderRouter = require('./routes/orderRouter.js');
@@ -25,7 +25,6 @@ app.use('/api/message', messageRouter);
 app.use((req, res, next) => {
     res.status(404).json({ message: 'Ressource non trouvée' });
 }); 
-
 
 app.use((err, req, res, next) => {
     console.error(err.stack);

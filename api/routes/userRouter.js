@@ -1,16 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const { oneOf } = require('express-validator');
+const { signUpUserSchema, signInUserSchema, editProfilSchema } = require('../middleware/validators/userSchema.js');
 
 router.get('/', userController.getAllUsers);
 router.get('/:id', userController.getUserById);
-router.post('/signUp', userController.createUser);
-router.post('/:id/signIn', userController.LonInUser);
+
+router.get('/:id/profile', userController.getUserProfileById);
+router.post('/signUp', oneOf(signUpUserSchema), userController.signUpUser);
+router.post('/:id/signIn',oneOf(signInUserSchema),  userController.signInUser);
 router.post('/:id/logOut', userController.logOutUser);
-router.put('/:id/edit', userController.updateUser);
-router.delete('/:id/delete', userController.deleteUser);
 
-
+router.put('/edit', oneOf(editProfilSchema), userController.updateUserMainInfos);
 
 
 module.exports = router;
