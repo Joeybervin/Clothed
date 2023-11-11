@@ -47,34 +47,41 @@ CREATE TABLE Users (
     date_of_birth DATE,
     email VARCHAR(40) UNIQUE NOT NULL,
     password VARCHAR(150) NOT NULL,
+    adress JSONB DEFAULT '{}',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_role list_of_role DEFAULT 'customer',
-    payment_info JSONB
+    payment_info JSONB DEFAULT '{}'
 );
 
 CREATE TABLE Cart (
     id UUID DEFAULT Uuid_generate_v4() PRIMARY KEY,
     token UUID DEFAULT Uuid_generate_v4(),
-    items JSON,
+    items TEXT[],
     user_id UUID UNIQUE,
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
-CREATE TYPE order_status AS ENUM('payé', 'en cours de préparation', 'expédié', 'en cours de livraison', 'livré', 'annulé', 'traitement de la demande en cours', 'remboursé');
+CREATE TYPE order_status AS ENUM('payé', 'en cours de préparation', 'expédié', 'en cours de livraison', 'livré', 'annulé', 'rupture de stock', 'non payé' 'en cours de traitement', 'remboursé');
 
 CREATE TABLE Orders (
     id UUID DEFAULT Uuid_generate_v4() PRIMARY KEY,
-    token UUID DEFAULT Uuid_generate_v4(),
     items TEXT[] NOT NULL,
     user_id UUID NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    payment_info JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     delivery_date DATE,
-    order_status order_status NOT NULL,
-    discount_coupons BOOLEAN,
-    discount_coupons_infos VARCHAR(20),
-    FOREIGN KEY (user_id) REFERENCES Users(id)
+    order_status order_status DEFAULT "en cours de traitement",
+    discount_coupons_infos UUID DEFAULT NULL,
+    processing_started_at TIMESTAMP,
+    error TEXT,
+    FOREIGN KEY (user_id) REFERENCES Users(id),
+    FOREIGN KEY (discount_coupons_infos) REFERENCES Coupons(id)
 );
+
+CREATE UNIQUE INDEX Idx_rders_waiting_list ON Orders (processing_started_at, created_at DESC)
+INCLUDE (id, created_at)
+WHERE (processing_started_at IS NULL);
 
 CREATE TABLE Coupons (
     id UUID DEFAULT Uuid_generate_v4() PRIMARY KEY,

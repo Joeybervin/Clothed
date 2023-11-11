@@ -3,6 +3,7 @@ api/logs
 api/node_modules
 api/dist
 api/.env
+api/samples
 
 # client folder
 client/node_modules

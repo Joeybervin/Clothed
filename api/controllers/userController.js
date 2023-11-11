@@ -2,14 +2,19 @@ const pool = require('../connection_db');
 const dbUtils = require('../utils/handleDatabaseError.utils');
 const { validationResult } = require('express-validator');
 
-exports.getAllUsers = (req, res) => {
-    pool.query('SELECT token, first_name, last_name, email, created_at  FROM Users', (err, result) => {
-        if (err) {
-            dbUtils.handleDatabaseError(err, res);
-        } else {
-            res.json({ result: result });
-        }
-    });
+exports.getAllUsers = async (req, res) => {
+    try {
+        await pool.query('SELECT token, first_name, last_name, email, created_at  FROM Users', (err, result) => {
+            if (err) {
+                dbUtils.handleDatabaseError(err, res);
+            } else {
+                res.json({ result: result });
+            }
+        });
+
+    } catch (err) {
+
+    }
 };
 
 exports.getUserById = (req, res) => {
@@ -77,7 +82,7 @@ exports.signUpUser = async (req, res) => {
             [email.toLowerCase(), lastName.toLowerCase(), firstName.toLowerCase(), hashedPassword]
         );
 
-        res.json({ message: 'Inscription réussie' , success : true }); 
+        res.status(201).json({ message: 'Inscription réussie' , success : true }); 
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Erreur lors de l\'inscription. Veuillez réesayer dans quelques instants' });
