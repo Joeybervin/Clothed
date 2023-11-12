@@ -1,14 +1,20 @@
 const { checkSchema } = require('express-validator');
 
-
+/**
+ * Validation schema for coupon information.
+ * This schema utilizes express-validator to define validation rules
+ * for coupon-related data entered in the application.
+ */
 const couponSchema = checkSchema({
     details: {
+        in: ['body'],
         isLength: {
             options: { max: 255 },
             errorMessage: 'Le champ "details" doit contenir au maximum 255 caractères',
         },
     },
     cart_total_min: {
+        in: ['body'],
         isNumeric: {
             errorMessage: 'Le champ "cart_total_min" doit être un nombre',
         },
@@ -22,6 +28,7 @@ const couponSchema = checkSchema({
         },
     },
     name: {
+        in: ['body'],
         notEmpty: {
             errorMessage: 'Le champ "name" ne doit pas être vide',
         },
@@ -31,6 +38,7 @@ const couponSchema = checkSchema({
         },
     },
     pourcentage: {
+        in: ['body'],
         isFloat: {
             errorMessage: 'Le champ "pourcentage" doit être un nombre décimal',
         },
@@ -44,6 +52,7 @@ const couponSchema = checkSchema({
         },
     },
     start_date: {
+        in: ['body'],
         custom: {
             options: (value) => {
                 const startDate = new Date(value);
@@ -58,6 +67,7 @@ const couponSchema = checkSchema({
         },
     },
     end_date: {
+        in: ['body'],
         custom: {
             options: (value, { req }) => {
                 const endDate = new Date(value);

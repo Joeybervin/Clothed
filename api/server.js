@@ -7,6 +7,8 @@ const productRouter = require('./routes/productRoutes.js');
 const userRouter = require('./routes/userRouter.js');
 const orderRouter = require('./routes/orderRouter.js');
 const cartRouter = require('./routes/cartRouter.js');
+const checkoutRouter = require('./routes/checkoutRouter.js');
+const couponRouter = require('./routes/couponRouter.js');
 const messageRouter = require('./routes/messageRouter.js');
 
 app.use(cors());
@@ -19,6 +21,8 @@ app.use('/api/products', productRouter);
 app.use('/api/user', userRouter);
 app.use('/api/order', orderRouter);
 app.use('/api/cart', cartRouter);
+app.use('/api/chekout', checkoutRouter);
+app.use('/api/coupon', couponRouter);
 app.use('/api/message', messageRouter);
 
 // handdle errors 

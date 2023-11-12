@@ -4,24 +4,6 @@ const { checkSchema } = require('express-validator');
  * Validation schema for user creation.
  * This schema uses express-validator to define validation rules
  * for the data sent during user creation.
- *
- * @typedef {Object} CreateUserSchema
- * @property {Object} email - User's email.
- * @property {string} email.notEmpty - Email should not be empty.
- * @property {string} email.isEmail - Email should be in a valid format.
- * @property {string} email.matches - Email should match a specific pattern.
- * @property {string} email.isLength - Email should not exceed 35 characters.
- * @property {Object} password - User's password.
- * @property {string} password.isLength - Password should be between 6 and 30 characters.
- * @property {string} password.matches - Password should match a specific pattern.
- * @property {Object} firstName - User's first name.
- * @property {string} firstName.notEmpty - First name should not be empty.
- * @property {string} firstName.isLength - First name should be between 2 and 20 characters.
- * @property {string} firstName.matches - First name should match a specific pattern.
- * @property {Object} lastName - User's last name.
- * @property {string} lastName.notEmpty - Last name should not be empty.
- * @property {string} lastName.isLength - Last name should be between 2 and 20 characters.
- * @property {string} lastName.matches - Last name should match a specific pattern.
  */
 const signUpUserSchema = checkSchema({
     email: {
@@ -39,6 +21,8 @@ const signUpUserSchema = checkSchema({
             options: { max: 35 },
             errorMessage: 'L\'adresse email ne doit pas dépasser 35 caractères',
         },
+        normalizeEmail: true,
+        trim: true,
     },
     password: {
         isLength: {
@@ -53,6 +37,7 @@ const signUpUserSchema = checkSchema({
             options: (value) => !/[(){}|\s,;:><]/.test(value),
             errorMessage: 'Le mot de passe contient des caractères non autorisés : (){}|,;:><',
         },
+        trim: true,
     },
     firstName: {
         notEmpty: {
@@ -66,6 +51,7 @@ const signUpUserSchema = checkSchema({
             options: /^[a-zA-ZÀ-ÖØ-öø-ÿ\s'-]+$/,
             errorMessage: 'Le prénom contient des caractères invalides',
         },
+        trim: true,
     },
     lastName: {
         notEmpty: {
@@ -79,6 +65,7 @@ const signUpUserSchema = checkSchema({
             options: /^[a-zA-ZÀ-ÖØ-öø-ÿ\s'-]+$/,
             errorMessage: 'Le nom contient des caractères invalides',
         },
+        trim: true,
     },
 });
 
@@ -87,20 +74,12 @@ const signUpUserSchema = checkSchema({
  * Validation schema for user sign-in.
  * This schema uses express-validator to define validation rules
  * for the data sent during user sign-in.
- *
- * @typedef {Object} SignInUserSchema
- * @property {Object} email - User's email.
- * @property {string} email.notEmpty - Email should not be empty.
- * @property {string} email.isEmail - Email should be in a valid format.
- * @property {string} email.matches - Email should match a specific pattern.
- * @property {Object} password - User's password.
- * @property {string} password.isLength - Password should be between 6 and 30 characters.
- * @property {string} password.matches - Password should not contain certain characters.
  */
 const signInUserSchema = checkSchema({
     email: {
+        in: ['body'],
         notEmpty: {
-            errorMessage: 'Adresse email invalide',
+            errorMessage: 'Obligatoire !',
         },
         isEmail: {
             errorMessage: 'Adresse email invalide',
@@ -113,8 +92,11 @@ const signInUserSchema = checkSchema({
             options: { max: 35 },
             errorMessage: 'Adresse email invalide',
         },
+        normalizeEmail: true,
+        trim: true,
     },
     password: {
+        in: ['body'],
         isLength: {
             options: { min: 6, max: 30 },
             errorMessage: 'Mot de passe invalide',
@@ -123,11 +105,19 @@ const signInUserSchema = checkSchema({
             options: (value) => !/[(){}|\s,;:><]/.test(value),
             errorMessage: 'Mot de passe invalide',
         },
+        trim: true,
     },
 });
 
+
+/**
+ * Validation schema for editing user profile.
+ * This schema uses express-validator to define validation rules
+ * for the data sent when editing a user profile.
+ */
 const editProfilSchema = checkSchema({
     firstName: {
+        in: ['body'],
         notEmpty: {
             errorMessage: 'Le prénom ne doit pas être vide',
         },
@@ -139,8 +129,10 @@ const editProfilSchema = checkSchema({
             options: /^[a-zA-ZÀ-ÖØ-öø-ÿ\s'-]+$/,
             errorMessage: 'Le prénom contient des caractères invalides',
         },
+        trim: true,
     },
     lastName: {
+        in: ['body'],
         notEmpty: {
             errorMessage: 'Le nom ne doit pas être vide',
         },
@@ -152,6 +144,7 @@ const editProfilSchema = checkSchema({
             options: /^[a-zA-ZÀ-ÖØ-öø-ÿ\s'-]+$/,
             errorMessage: 'Le nom contient des caractères invalides',
         },
+        trim: true,
     },
 })
 
