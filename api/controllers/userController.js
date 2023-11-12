@@ -13,7 +13,7 @@ exports.getAllUsers = (req, res) => {
         if (err) {
             error.handleDatabaseError(err, res);
         } else {
-            res.status(200).json(result);
+            return res.status(200).json(result);
         }
     });
 };
@@ -33,7 +33,7 @@ exports.getUserById = (req, res) => {
         }
         else {
             if (result.rows.length === 0) {
-                res.status(404).json({ message: 'User not found' });
+                return res.status(404).json({ message: 'User not found' });
             } else {
                 res.json(result.rows[0]);
             }
@@ -56,7 +56,7 @@ exports.getUserProfileById = (req, res) => {
         }
         else {
             if (result.rows.length === 0) {
-                res.status(404).json({ message: 'User not found' });
+                return res.status(404).json({ message: 'User not found' });
             } else {
                 res.json(result.rows[0]);
             }
@@ -108,7 +108,7 @@ exports.signUpUser = (req, res) => {
                         return dbUtils.handleDatabaseError(insertError, res);
                     }
 
-                    res.status(201).json({ message: 'Inscription réussie', success: true });
+                    return res.status(201).json({ message: 'Inscription réussie', success: true });
                 }
             );
         });
@@ -136,7 +136,7 @@ exports.updateUserMainInfos = (req, res) => {
             if (err) {
                 dbUtils.handleDatabaseError(err, res);
             } else {
-                res.status(200).json({ message: 'Vos informations ont été mises à jour avec succès' });
+                return res.status(200).json({ message: 'Vos informations ont été mises à jour avec succès' });
             }
         }
     );
@@ -176,7 +176,7 @@ exports.signInUser = (req, res) => {
                 return res.status(401).json({ message: 'Le mot de passe ne correspond pas' });
             }
 
-            res.status(200).json({ message: 'Connexion réussie', success: true });
+            return res.status(200).json({ message: 'Connexion réussie', success: true });
         });
     });
 };

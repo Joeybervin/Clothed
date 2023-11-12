@@ -2,17 +2,29 @@ const pool = require('../connection_db');
 const error = require('../utils/handle500Error');
 const { validationResult } = require('express-validator');
 
-exports.getAllCoupons = (req, res) => {
+
+/**
+ * Retrieves all coupons from the database.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+exports.getAllCoupons = async(req, res) => {
     pool.query('SELECT * FROM Coupons', (err, result) => {
         if (err) {
             return error.handleDatabaseError(err, res);
         } else {
-            res.status(200).json(result);
+            return res.status(200).json(result);
         }
     });
 };
 
-exports.createCoupon = (req, res) => {
+
+/**
+ * Creates a new coupon in the database.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+exports.createCoupon = async(req, res) => {
     const { details, cart_total_min, name, pourcentage, start_date, end_date } = req.body;
 
     const errors = validationResult(req);
@@ -27,13 +39,19 @@ exports.createCoupon = (req, res) => {
             if (err) {
                 return error.handleDatabaseError(err, res);
             } else {
-                res.status(200).json(result);
+                return res.status(200).json(result);
             }
         }
     );
 };
 
-exports.deleteCoupon = (req, res) => {
+
+/**
+ * Deletes a coupon from the database.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+exports.deleteCoupon = async(req, res) => {
     const couponId = req.body.id;
     pool.query('DELETE FROM Coupons WHERE id = $1', [couponId], (err, result) => {
         if (err) {

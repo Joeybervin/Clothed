@@ -1,5 +1,7 @@
 const pool = require('../connection_db');
 const calculateCart = require('../utils/calculCart.utils');
+const error = require('../utils/handle500Error');
+
 
 /**
  * Checks the availability of items in the shopping cart.
@@ -8,7 +10,7 @@ const calculateCart = require('../utils/calculCart.utils');
  * @param {object} res - Express response object.
  * @returns {object} - Response indicating the availability status or a list of items with stock issues.
  */
-exports.getCartCheckout = (req, res) => {
+exports.getCartCheckout = async(req, res) => {
     const cartItems = req.body.cartItems;
     const cartTotal = calculateCart(cartItems);
 
@@ -25,7 +27,7 @@ exports.getCartCheckout = (req, res) => {
             return res.status(200).json({ available: true, cartTotal });
         }
     } catch (err) {
-        return res.status(500).json({ message: "Une erreur s'est produite lors de la vérification du stock" });
+        return error.handleServerError(err, res, 'Erreur interne lors du traitement de votre commande, votre commande à été annulée. Vous ne serez pas débité');
     }
 };
 

@@ -1,5 +1,7 @@
 const pool = require('../connection_db');
 const { checkOrderStockAvailability } = require('../utils/checkOrderStockAvailability.utils.js')
+const error = require('../utils/handle500Error');
+
 
 /**
  * Retrieves all orders
@@ -9,10 +11,9 @@ const { checkOrderStockAvailability } = require('../utils/checkOrderStockAvailab
 exports.getAllOrders = async (req, res) => {
     pool.query('SELECT * FROM Orders', (err, result) => {
         if (err) {
-            res.status(500).json({ message: 'Problème serveur', error: err.message });
+            return error.handleDatabaseError(err, res);
         }
-
-        res.status(200).json(result);
+        return res.status(200).json(result);
     });
 };
 
@@ -32,7 +33,7 @@ exports.createOrder = async (req, res) => {
             [orderInfos.items, user_token, orderInfos.total_price, discount_coupons_infos]
         );
 
-        const orderId  = createdOrder.rows[0];
+        const orderId  = createdOrder.rows[0].id;
 
         const pendingOrders = await pool.query(
             "SELECT id, created_at, items FROM Orders WHERE processing_started_at IS NULL ORDER BY created_at DESC"
@@ -53,7 +54,9 @@ exports.createOrder = async (req, res) => {
         await pool.query('COMMIT');
         return res.status(201).json({ success: true, message: "Commande passée avec succès" });
     } catch (err) {
-        await pool.query('DELETE FROM Orders WHERE id = $1', [orderId]);
+        if (orderId) {
+            await pool.query('DELETE FROM Orders WHERE id = $1', [orderId]);
+        }
         await pool.query('ROLLBACK');
         return res.status(500).json({ success: false, message: "Nous rencontrons des problèmes, veuillez réessayer plus tard.", error: err });
     } finally {
@@ -69,17 +72,18 @@ exports.createOrder = async (req, res) => {
 exports.updateOrder = async (req, res) => {
     const { update, order_id } = req.body.update;
 
-    try {
-        const result = await pool.query('UPDATE "order" SET order_status = $1 WHERE order_id = $2 RETURNING *', [update, order_id]);
-
-        if (result.rowCount > 0) {
-            res.status(200).json({ success: true, message: `La commande ${order_id} a été mise à jour -> ${update}` });
+    pool.query('UPDATE "order" SET order_status = $1 WHERE order_id = $2 RETURNING *', [update, order_id], (err, result) => {
+        if (err) {
+            return error.handleDatabaseError(err, res);
         } else {
-            res.status(404).json({ success: false, message: `La commande avec l'ID ${order_id} est introuvable` });
+            if (result.rowCount > 0) {
+                return res.status(200).json({ success: true, message: `La commande ${order_id} a été mise à jour -> ${update}` });
+            } else {
+                return res.status(404).json({ success: false, message: `La commande avec l'ID ${order_id} est introuvable` });
+            }
         }
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Erreur lors de la mise à jour de la commande", error: error });
-    }
+    });
 };
+
 
 
