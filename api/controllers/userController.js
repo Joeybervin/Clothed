@@ -2,6 +2,12 @@ const pool = require('../connection_db');
 const dbUtils = require('../utils/handleDatabaseError.utils');
 const { validationResult } = require('express-validator');
 
+/**
+ * Fetches all users with limited information: token, first name, last name, email, and creation date.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} - JSON response with user information
+ */
 exports.getAllUsers = async (req, res) => {
     try {
         await pool.query('SELECT token, first_name, last_name, email, created_at  FROM Users', (err, result) => {
@@ -17,6 +23,12 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
+/**
+ * Retrieves a user's basic information by ID (token).
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} - JSON response with user details
+ */
 exports.getUserById = (req, res) => {
     const userId = req.params.id;
 
@@ -35,6 +47,12 @@ exports.getUserById = (req, res) => {
 
 };
 
+/**
+ * Retrieves a user's complete profile information by ID (token).
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} - JSON response with the user's detailed profile
+ */
 exports.getUserProfileById = (req, res) => {
     const userId = req.params.id;
 
@@ -53,6 +71,12 @@ exports.getUserProfileById = (req, res) => {
 
 };
 
+/**
+ * Registers a new user.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} - JSON response indicating success or failure of the registration process
+ */
 exports.signUpUser = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -89,6 +113,12 @@ exports.signUpUser = async (req, res) => {
     }
 };
 
+/**
+ * Updates a user's main information such as first name and last name.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} - JSON response indicating the success or failure of the update process
+ */
 exports.updateUserMainInfos = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -111,6 +141,12 @@ exports.updateUserMainInfos = async (req, res) => {
     
 };
 
+/**
+ * Authenticates a user.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} - JSON response indicating success or failure of the authentication process
+ */
 exports.signInUser = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -140,6 +176,12 @@ exports.signInUser = async (req, res) => {
 
 };
 
+/**
+ * Logs out a user.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} - JSON response indicating the success or failure of the logout process
+ */
 exports.logOutUser = (req, res) => {
     // Logique pour déconnecter un utilisateur
 };
