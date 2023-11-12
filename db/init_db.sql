@@ -53,14 +53,6 @@ CREATE TABLE Users (
     payment_info JSONB DEFAULT '{}'
 );
 
-CREATE TABLE Cart (
-    id UUID DEFAULT Uuid_generate_v4() PRIMARY KEY,
-    token UUID DEFAULT Uuid_generate_v4(),
-    items TEXT[],
-    user_id UUID UNIQUE,
-    FOREIGN KEY (user_id) REFERENCES Users(id)
-);
-
 CREATE TYPE order_status AS ENUM('payé', 'en cours de préparation', 'expédié', 'en cours de livraison', 'livré', 'annulé', 'rupture de stock', 'non payé' 'en cours de traitement', 'remboursé');
 
 CREATE TABLE Orders (
@@ -85,14 +77,12 @@ WHERE (processing_started_at IS NULL);
 
 CREATE TABLE Coupons (
     id UUID DEFAULT Uuid_generate_v4() PRIMARY KEY,
-    token UUID DEFAULT Uuid_generate_v4(),
     details TEXT,
     cart_total_min INT,
-    quantity INT,
     name VARCHAR(25) NOT NULL,
     pourcentage INT NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL
+    start_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    end_date TIMESTAMP DEFAULT NULL 
 );
 
 CREATE TYPE message_subject AS ENUM ('livraison', 'anulation', 'nos produits', 'ma commande', 'autre');

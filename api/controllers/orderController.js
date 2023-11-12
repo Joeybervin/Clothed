@@ -1,5 +1,5 @@
 const pool = require('../connection_db');
-
+const { checkOrderStockAvailability } = require('../utils/checkOrderStockAvailability.utils.js')
 
 /**
  * Retrieves all orders
@@ -14,39 +14,6 @@ exports.getAllOrders = async (req, res) => {
 
         res.status(200).json(result);
     });
-};
-
-
-/**
- * Checks stock availability for an order
- * @param {Array} orderItems - List of order items with ID and quantity
- * @returns {Boolean} - Stock availability for the order
-**/
-const checkStockAvailabilityOfOrder = async (orderItems) => {
-    try {
-        const productsToCheck = orderItems.map(item => ({
-            productId: item.id,
-            quantity: item.quantity
-        }));
-
-        const availableStocks = await pool.query(
-            'SELECT id, inventory FROM products WHERE id IN ($1:csv) FOR UPDATE',
-            [productsToCheck.map(item => item.productId)]
-        );
-
-        let allAvailable = true;
-        for (const product of productsToCheck) {
-            const availableProduct = availableStocks.rows.find(row => row.id === product.productId);
-            if (!availableProduct || availableProduct.inventory < product.quantity) {
-                allAvailable = false;
-                break;
-            }
-        }
-
-        return allAvailable;
-    } catch (error) {
-        throw error;
-    }
 };
 
 /**
@@ -72,7 +39,7 @@ exports.createOrder = async (req, res) => {
         );
 
         for (const pendingOrder of pendingOrders.rows) {
-            const stockAvailable = await checkStockAvailabilityOfOrder(pendingOrder.items);
+            const stockAvailable = checkOrderStockAvailability(pendingOrder.items);
 
             if (!stockAvailable) {
                 await pool.query('UPDATE "Orders" SET order_status = $1, processing_started_at = $2 WHERE id = $3', ['rupture de stock', Date.now(),  orderId]);
