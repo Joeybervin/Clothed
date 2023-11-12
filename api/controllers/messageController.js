@@ -1,29 +1,67 @@
 const pool = require('../connection_db');
 
-// Exemple dans MessageController.js
+/**
+ * Get all the messages
+ * @param {object} req - Express request object
+ * @param {object} res - Express response object
+**/
 exports.getAllMessages = (req, res) => {
     pool.query('SELECT * FROM Messages', (err, result) => {
         if (err) {
-            res.status(500).json({ message: 'Échec de la connexion à PostgreSQL', error: err.message });
+            return res.status(500).json({ message: 'Problème serveur', error: err.message });
         } else {
-            res.json(result);
+            res.status(200).json(result);
         }
     });
 };
 
+/**
+ * Retrieve a message by its ID
+ * @param {object} req - Express request object
+ * @param {object} res - Express response object
+**/
 exports.getMessageById = (req, res) => {
-    // Logique pour récupérer un produit par ID
+    const messageId = req.params.messageId
+    pool.query('SELECT * FROM Messages WHERE id = $1', [messageId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Problème serveur', error: err.message });
+        } else {
+            res.status(200).json(result);
+        }
+    });
 };
 
+
+/**
+ * Create a new message
+ * @param {object} req - Express request object
+ * @param {object} res - Express response object
+**/
 exports.createMessage = (req, res) => {
-    // Logique pour créer un nouveau produit
+
+    const { title, message_subject, message, order_id, user_email } = req.body
+    pool.query('INSERT INTO Messages (title, message_subject, message, order_id, user_email) WHERE VALUES ($1, $2, $3, $4, $5);',
+    [title, message_subject, message, order_id, user_email], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Problème serveur', error: err.message });
+        } else {
+            res.status(200).json(result);
+        }
+    });
 };
 
-exports.updateMessage = (req, res) => {
-    // Logique pour mettre à jour un produit par ID
-};
-
+/**
+ * Delete a message by ID
+ * @param {object} req - Express request object
+ * @param {object} res - Express response object
+**/
 exports.deleteMessage = (req, res) => {
-    // Logique pour supprimer un produit par ID
+    const messageId = req.params.id;
+    pool.query('DELETE Messages WHERE id = $1;', [messageId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Problème serveur', error: err.message });
+        }
+        return res.status(201).json({message: "Message supprimé"});
+    })
 };
 
