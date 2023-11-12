@@ -1,7 +1,6 @@
 const { checkSchema } = require('express-validator');
 
 
-
 const addressSchema = checkSchema({
     street: {
         notEmpty: {

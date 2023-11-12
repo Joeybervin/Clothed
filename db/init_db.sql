@@ -77,7 +77,7 @@ WHERE (processing_started_at IS NULL);
 
 CREATE TABLE Coupons (
     id UUID DEFAULT Uuid_generate_v4() PRIMARY KEY,
-    details TEXT,
+    details TEXT DEFAULT NULL,
     cart_total_min INT,
     name VARCHAR(25) NOT NULL,
     pourcentage INT NOT NULL,

@@ -1,5 +1,5 @@
 const pool = require('../connection_db');
-const dbUtils = require('../utils/handleDatabaseError.utils');
+const error = require('../utils/handle500Error');
 const { validationResult } = require('express-validator');
 
 /**
@@ -8,19 +8,14 @@ const { validationResult } = require('express-validator');
  * @param {Object} res - Express response object
  * @returns {Object} - JSON response with user information
  */
-exports.getAllUsers = async (req, res) => {
-    try {
-        await pool.query('SELECT token, first_name, last_name, email, created_at  FROM Users', (err, result) => {
-            if (err) {
-                dbUtils.handleDatabaseError(err, res);
-            } else {
-                res.json({ result: result });
-            }
-        });
-
-    } catch (err) {
-
-    }
+exports.getAllUsers = (req, res) => {
+    pool.query('SELECT token, first_name, last_name, email, created_at  FROM Users', (err, result) => {
+        if (err) {
+            error.handleDatabaseError(err, res);
+        } else {
+            res.status(200).json(result);
+        }
+    });
 };
 
 /**
@@ -44,7 +39,6 @@ exports.getUserById = (req, res) => {
             }
         }
     });
-
 };
 
 /**
@@ -68,7 +62,6 @@ exports.getUserProfileById = (req, res) => {
             }
         }
     });
-
 };
 
 /**
@@ -77,40 +70,49 @@ exports.getUserProfileById = (req, res) => {
  * @param {Object} res - Express response object
  * @returns {Object} - JSON response indicating success or failure of the registration process
  */
-exports.signUpUser = async (req, res) => {
+exports.signUpUser = (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-    try {
-        
-        const { email, lastName, firstName, password, passwordValidation } = req.body;
 
-        if (!email.trim() || !lastName.trim() || !firstName.trim() || !password.trim()) {
-            return res.status(400).json({ errors: 'Tous les champs doivent être remplis' });
+    const { email, lastName, firstName, password, passwordValidation } = req.body;
+
+    if (!email.trim() || !lastName.trim() || !firstName.trim() || !password.trim()) {
+        return res.status(400).json({ errors: 'Tous les champs doivent être remplis' });
+    }
+
+    pool.query('SELECT email FROM Users WHERE email = $1', [email.toLowerCase()], (err, emailExists) => {
+        if (err) {
+            return dbUtils.handleDatabaseError(err, res);
         }
 
-        const emailExists = await pool.query('SELECT email FROM Users WHERE email = $1', [email.toLowerCase()]);
         if (emailExists.rows.length > 0) {
             return res.status(400).json({ errors: 'Cet email est déjà enregistré' });
         }
 
-        if ( password !== passwordValidation) {
-            return res.status(400).json({ errors: 'Les mot de passe ne correspondent pas !'});
+        if (password !== passwordValidation) {
+            return res.status(400).json({ errors: 'Les mots de passe ne correspondent pas !' });
         }
 
-        const hashedPassword = await argon2.hash(password);
+        bcrypt.hash(password, 10, (hashError, hashedPassword) => {
+            if (hashError) {
+                return dbUtils.handleServerError(hashError, res);
+            }
 
-        await pool.query(
-            'INSERT INTO Users (email, last_name, first_name, password) VALUES ($1, $2, $3, $4)',
-            [email.toLowerCase(), lastName.toLowerCase(), firstName.toLowerCase(), hashedPassword]
-        );
+            pool.query(
+                'INSERT INTO Users (email, last_name, first_name, password) VALUES ($1, $2, $3, $4)',
+                [email.toLowerCase(), lastName.toLowerCase(), firstName.toLowerCase(), hashedPassword],
+                (insertError) => {
+                    if (insertError) {
+                        return dbUtils.handleDatabaseError(insertError, res);
+                    }
 
-        res.status(201).json({ message: 'Inscription réussie' , success : true }); 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Erreur lors de l\'inscription. Veuillez réesayer dans quelques instants' });
-    }
+                    res.status(201).json({ message: 'Inscription réussie', success: true });
+                }
+            );
+        });
+    });
 };
 
 /**
@@ -119,26 +121,25 @@ exports.signUpUser = async (req, res) => {
  * @param {Object} res - Express response object
  * @returns {Object} - JSON response indicating the success or failure of the update process
  */
-exports.updateUserMainInfos = async (req, res) => {
+exports.updateUserMainInfos = (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-    try {
 
-        const {lastName, firstName, email} = req.body;
+    const { lastName, firstName, email } = req.body;
 
-        await pool.query(
-            'UPDATE Users SET last_name = $1, first_name = $2 WHERE email = $3',
-            [lastName.toLowerCase(), firstName.toLowerCase(), email.toLowerCase()]
-        );
-        res.status(200).json({ message: 'Vos informations ont été mises à jour avec succès' });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Erreur lors de la modifications de vos informations. Veuillez réesayer dans quelques instants' });
-    }
-    
+    pool.query(
+        'UPDATE Users SET last_name = $1, first_name = $2 WHERE email = $3',
+        [lastName.toLowerCase(), firstName.toLowerCase(), email.toLowerCase()],
+        (err) => {
+            if (err) {
+                dbUtils.handleDatabaseError(err, res);
+            } else {
+                res.status(200).json({ message: 'Vos informations ont été mises à jour avec succès' });
+            }
+        }
+    );
 };
 
 /**
@@ -147,33 +148,37 @@ exports.updateUserMainInfos = async (req, res) => {
  * @param {Object} res - Express response object
  * @returns {Object} - JSON response indicating success or failure of the authentication process
  */
-exports.signInUser = async (req, res) => {
+exports.signInUser = (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    try {
-        const { email, password } = req.body;
+    const { email, password } = req.body;
 
-        const user = await pool.query('SELECT * FROM Users WHERE email = $1', [email.toLowerCase()]);
+    pool.query('SELECT * FROM Users WHERE email = $1', [email.toLowerCase()], (queryError, user) => {
+        if (queryError) {
+            return dbUtils.handleDatabaseError(queryError, res);
+        }
 
         if (user.rows.length === 0) {
             return res.status(404).json({ message: "L'utilisateur n'existe pas" });
         }
 
         const storedPassword = user.rows[0].password;
-        const isPasswordValid = await bcrypt.compare(password, storedPassword);
-        if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Le mot de passe ne correspond pas' });
-        }
 
-        res.status(200).json({ message: 'Connexion réussie', success : true });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Erreur lors de la connexion. Veuillez recommencer dans quelques instant.' });
-    }
+        bcrypt.compare(password, storedPassword, (compareError, isPasswordValid) => {
+            if (compareError) {
+                return dbUtils.handleServerError(compareError, res);
+            }
 
+            if (!isPasswordValid) {
+                return res.status(401).json({ message: 'Le mot de passe ne correspond pas' });
+            }
+
+            res.status(200).json({ message: 'Connexion réussie', success: true });
+        });
+    });
 };
 
 /**
