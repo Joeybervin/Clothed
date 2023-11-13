@@ -9,7 +9,19 @@ dns.setDefaultResultOrder('verbatim')
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true,
-    strictPort: true,
-  }
+    host: '0.0.0.0',
+    watch: {
+      usePolling: true
+  },
+    proxy: {
+      '/api': {
+        target: `http://api:5555`,
+        changeOrigin: true,
+        secure: false,      
+        ws: true,
+        
+      },
+    },
+  },
+  
 })
