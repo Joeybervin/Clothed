@@ -5,12 +5,12 @@ const pool = require('../connection_db');
  * @param {Object} req - Requête client
  * @param {Object} res - Réponse serveur
 **/
-exports.getAllProducts = (req, res) => {
+exports.getAllProducts = async(req, res) => {
     pool.query('SELECT * FROM Products WHERE inventory > 0', (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Problème serveur', error: err.message });
         } 
-            return res.json(result);
+            return res.json({result : result.rows});
     });
 };
 
@@ -19,7 +19,7 @@ exports.getAllProducts = (req, res) => {
  * @param {Object} req - Requête client contenant le paramètre de catégorie
  * @param {Object} res - Réponse serveur
 **/
-exports.getProductsFilteredByCategory = (req, res) => {
+exports.getProductsFilteredByCategory = async(req, res) => {
     const category = req.params.category
     pool.query('SELECT * FROM Products WHERE category = $1', [category], (err, result) => {
         if (err) {
@@ -34,7 +34,7 @@ exports.getProductsFilteredByCategory = (req, res) => {
  * @param {Object} req - Requête client contenant les détails du nouveau produit
  * @param {Object} res - Réponse serveur
 **/
-exports.createProduct = (req, res) => {
+exports.createProduct = async(req, res) => {
     const {name, price, inventory, category, gender} = req.body;
     pool.query('INSERT INTO Product (name, price, inventory, category, gender) WHERE VALUES ($1, $2, $3, $4, $5)', [name, price, inventory, category, gender], (err, result) => {
         if (err) {
@@ -49,7 +49,7 @@ exports.createProduct = (req, res) => {
  * @param {Object} req - Requête client contenant l'ID du produit et la quantité à modifier
  * @param {Object} res - Réponse serveur
 **/
-exports.updateProductStock = (req, res) => {
+exports.updateProductStock = async(req, res) => {
     const {id, stock} = req.body
     pool.query('UPDATE Products SET inventoty = $1 WHERE id = $2', [stock, id], (err, result) => {
         if (err) {
@@ -64,7 +64,7 @@ exports.updateProductStock = (req, res) => {
  * @param {Object} req - Requête client contenant l'ID du produit à supprimer
  * @param {Object} res - Réponse serveur
 **/
-exports.deleteProduct = (req, res) => {
+exports.deleteProduct = async(req, res) => {
     const productId = req.body.id;
     pool.query('DELETE Products WHERE id = $1;', [productId], (err, result) => {
         if (err) {

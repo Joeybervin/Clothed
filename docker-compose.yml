@@ -11,6 +11,7 @@ services:
     restart: on-failure
     volumes:
       - "./db/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql"
+      - "./db/init_user.sql:/docker-entrypoint-initdb.d/init_user.sql"
     networks:
       - clothed-network
     healthcheck:
@@ -40,7 +41,9 @@ services:
       - 5173:5173
     networks:
       - clothed-network
-
+    volumes:
+      - /app/node_modules
+      - ./client:/app
 
   api:
     build:

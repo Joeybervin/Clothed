@@ -1,5 +1,5 @@
 const pool = require('../connection_db');
-const error = require('../utils/handle500Error');
+const { handleDatabaseError } = require('../utils/handle500Error.utils');
 const { validationResult } = require('express-validator');
 
 
@@ -11,7 +11,7 @@ const { validationResult } = require('express-validator');
 exports.getAllCoupons = async(req, res) => {
     pool.query('SELECT * FROM Coupons', (err, result) => {
         if (err) {
-            return error.handleDatabaseError(err, res);
+            return handleDatabaseError(err, res);
         } else {
             return res.status(200).json(result);
         }
@@ -37,7 +37,7 @@ exports.createCoupon = async(req, res) => {
         [details, cart_total_min, name.toUpperCase(), pourcentage, start_date, end_date],
         (err, result) => {
             if (err) {
-                return error.handleDatabaseError(err, res);
+                return handleDatabaseError(err, res);
             } else {
                 return res.status(200).json(result);
             }
@@ -55,7 +55,7 @@ exports.deleteCoupon = async(req, res) => {
     const couponId = req.body.id;
     pool.query('DELETE FROM Coupons WHERE id = $1', [couponId], (err, result) => {
         if (err) {
-            return error.handleDatabaseError(err, res);
+            return handleDatabaseError(err, res);
         }
         return res.status(201).json({ message: 'Coupon supprimé' });
     });

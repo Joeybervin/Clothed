@@ -1,6 +1,6 @@
 const pool = require('../connection_db');
 const { checkOrderStockAvailability } = require('../utils/checkOrderStockAvailability.utils.js')
-const error = require('../utils/handle500Error');
+const { handleDatabaseError } = require('../utils/handle500Error.utils.js');
 
 
 /**
@@ -11,9 +11,26 @@ const error = require('../utils/handle500Error');
 exports.getAllOrders = async (req, res) => {
     pool.query('SELECT * FROM Orders', (err, result) => {
         if (err) {
-            return error.handleDatabaseError(err, res);
+            return handleDatabaseError(err, res);
         }
         return res.status(200).json(result);
+    });
+};
+
+/**
+ * Retrieves all orders of the user
+ * @param {Object} req - Incoming request
+ * @param {Object} res - Outgoing response
+**/
+exports.getAllUserOrders = async (req, res) => {
+
+    const email = req.user.email
+
+    pool.query('SELECT * FROM Orders WHERE user_id = $1',[email], (err, result) => {
+        if (err) {
+            return handleDatabaseError(err, res);
+        }
+        return res.status(200).json(result.rows[0]);
     });
 };
 
@@ -43,12 +60,12 @@ exports.createOrder = async (req, res) => {
             const stockAvailable = checkOrderStockAvailability(pendingOrder.items);
 
             if (!stockAvailable) {
-                await pool.query('UPDATE "Orders" SET order_status = $1, processing_started_at = $2 WHERE id = $3', ['rupture de stock', Date.now(),  orderId]);
+                await pool.query('UPDATE "Orders" SET order_states = $1, processing_started_at = $2 WHERE id = $3', ['rupture de stock', Date.now(),  orderId]);
                 await pool.query('ROLLBACK');
                 return res.status(400).json({ success: false, message: "Certains produits ne sont malheureusement plus disponibles" });
             }
 
-            await pool.query('UPDATE "Order" SET order_status = $1, processing_started_at = $2 WHERE id = $3', ['en cours de préparation', Date.now(), orderId]);
+            await pool.query('UPDATE "Order" SET order_states = $1, processing_started_at = $2 WHERE id = $3', ['en cours de préparation', Date.now(), orderId]);
         }
 
         await pool.query('COMMIT');
@@ -72,9 +89,9 @@ exports.createOrder = async (req, res) => {
 exports.updateOrder = async (req, res) => {
     const { update, order_id } = req.body.update;
 
-    pool.query('UPDATE "order" SET order_status = $1 WHERE order_id = $2 RETURNING *', [update, order_id], (err, result) => {
+    pool.query('UPDATE "order" SET order_states = $1 WHERE order_id = $2 RETURNING *', [update, order_id], (err, result) => {
         if (err) {
-            return error.handleDatabaseError(err, res);
+            return handleDatabaseError(err, res);
         } else {
             if (result.rowCount > 0) {
                 return res.status(200).json({ success: true, message: `La commande ${order_id} a été mise à jour -> ${update}` });

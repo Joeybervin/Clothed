@@ -1,7 +1,7 @@
 const pool = require('../connection_db');
 const calculateCart = require('../utils/calculCart.utils');
-const error = require('../utils/handle500Error');
-
+const { handleServerError } = require('../utils/handle500Error.utils');
+const { checkOrderStockAvailability } = require('../utils/checkOrderStockAvailability.utils');
 
 /**
  * Checks the availability of items in the shopping cart.
@@ -11,23 +11,23 @@ const error = require('../utils/handle500Error');
  * @returns {object} - Response indicating the availability status or a list of items with stock issues.
  */
 exports.getCartCheckout = async(req, res) => {
-    const cartItems = req.body.cartItems;
+    const cartItems = req.session.cart;
     const cartTotal = calculateCart(cartItems);
 
     if (cartItems.length === 0) {
-        return res.status(400).json({ message: "Le panier est vide." });
+        return res.status(200).json({ message: "Le panier est vide." }); 
     }
 
     try {
-        const stockIssues = checkStockAvailabilityOfOrder(cartItems, true);
+        const stockIssues = checkOrderStockAvailability(cartItems, true);
 
         if (stockIssues.length > 0) {
-            return res.status(200).json({ available: false, stockIssues, cartTotal : cartTotal });
+            return res.status(200).json({ available: false, stockIssues, cartTotal });
         } else {
             return res.status(200).json({ available: true, cartTotal });
         }
     } catch (err) {
-        return error.handleServerError(err, res, 'Erreur interne lors du traitement de votre commande, votre commande à été annulée. Vous ne serez pas débité');
+        return handleServerError(err, res, 'Erreur interne lors du traitement de votre commande, votre commande à été annulée. Vous ne serez pas débité');
     }
 };
 

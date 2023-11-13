@@ -9,6 +9,8 @@ api/samples
 client/node_modules
 client/dist
 
+client/.env
+
 #database
 clothed_database/clothed_database.sqlproj
 

@@ -7,6 +7,7 @@ const { checkSchema } = require('express-validator');
  */
 const signUpUserSchema = checkSchema({
     email: {
+        in: ['body'],
         notEmpty: {
             errorMessage: 'L\'adresse email ne doit pas être vide',
         },
@@ -25,6 +26,7 @@ const signUpUserSchema = checkSchema({
         trim: true,
     },
     password: {
+        in: ['body'],
         isLength: {
             options: { min: 6, max: 30 },
             errorMessage: 'Le mot de passe doit contenir entre 6 et 30 caractères',
@@ -39,7 +41,15 @@ const signUpUserSchema = checkSchema({
         },
         trim: true,
     },
+    passwordValidation: {
+        in: ['body'],
+        custom: {
+            options: (value, { req }) => value === req.body.password,
+            errorMessage: 'Les mot de passe ne correspondent pas !',
+        },
+    },
     firstName: {
+        in: ['body'],
         notEmpty: {
             errorMessage: 'Le prénom ne doit pas être vide',
         },
@@ -54,6 +64,7 @@ const signUpUserSchema = checkSchema({
         trim: true,
     },
     lastName: {
+        in: ['body'],
         notEmpty: {
             errorMessage: 'Le nom ne doit pas être vide',
         },
