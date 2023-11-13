@@ -3,27 +3,26 @@ export const theme = {
     
     colors: {
         /* general */
-        primary : '#7777FF',
-        primaryAlpha : '#7777FF40',
-        secondary : '#FF2B80 ',
-        tertiary: '#303030',
+        primary : '',
+        primaryAlpha : '',
+        secondary : ' ',
+        tertiary: '',
         black: '#000000',
         white: '#ffffff',
         /* background */
         background: '#ffffff',
         /* text */
         primaryTextColor: '#000000',
-        secondaryTextColor: '#777777',
-        tertiaryTextColor: '#6666CC', 
-        inputPlaceholder: '#C2C2C2',
-        darkGrayText: '#303030',
+        secondaryTextColor: '#303030',
+        tertiaryTextColor: '', 
+        inputPlaceholder: '',
+        darkGrayText: '',
         
         /* buttons */
         buttonsStateColors : {
-            hover : '#5C38FC' ,
-            active: "#FF2B80",
-            disabledDark : "#777777",
-            disabledLight : "#C7C7C7",
+            hover : '' ,
+            active: "",
+            disabled : "",
             focus: ""
         },
         /* notifications */

@@ -2,33 +2,39 @@
 import { useEffect, useState } from 'react'
 import { NavLink, useNavigate} from 'react-router-dom';
 import {useSelector, useDispatch } from "react-redux";
+import axios from 'axios';
+import { ProductList, ProductCardProps } from '../../components/ui/ProductCard.tsx'
+
 
 /* style */
 import {StyledShop} from './shop.style.ts'
 
 const Shop = () => {
 
-    /* _____________ HOOKS _____________ */
+    const [products , setProducts] = useState<ProductCardProps[]>([])
+
+    
     useEffect(() => {
+        axios.get('/api/products?')
+            .then(response => {
+                setProducts(response.data)
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération des données : ', error);
+        });
         
     }, []);
 
-    /* ___________ VARIABLES ___________ */
-
-    /* _____________ STATES _____________ */
-    const [init , setInit] = useState(false)
-
-
-    /* ____________ FUNCTIONS ____________ */
-
     return (
-        <>
+        <StyledShop>
             <div>
+
+            <input type="search" />
             
-            <h1>Page Shop</h1>
+            <ProductList products={products} />
             
             </div>
-        </>
+        </StyledShop>
     );
 };
 

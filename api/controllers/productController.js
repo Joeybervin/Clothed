@@ -1,4 +1,5 @@
 const pool = require('../connection_db');
+const { fillArrayWithRandom } = require('../utils/getRandomValues.utils') ;
 
 /**
  * Retrieves all available products in stock
@@ -10,10 +11,27 @@ exports.getAllProducts = async(req, res) => {
         if (err) {
             return res.status(500).json({ message: 'Problème serveur', error: err.message });
         } 
-            return res.json({result : result.rows});
+            return res.status(200).json(result.rows);
     });
 };
 
+function selectClothesByIDs(clothes, randomArray) {
+    const selected = clothes.filter(cloth => randomArray.includes(cloth.id));
+    return selected;
+}
+
+exports.getRandomProducts = async(req, res) => {
+    pool.query('SELECT * FROM Products WHERE inventory > 0', (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Problème serveur', error: err.message });
+        } 
+    
+        const selectedProducts = selectClothesByIDs(result.rows, fillArrayWithRandom(result.rows.length, 5));
+        return res.status(200).json(selectedProducts );
+            
+    });
+};
+ 
 /**
  * Retrieves products filtered by a specific category
  * @param {Object} req - Requête client contenant le paramètre de catégorie
