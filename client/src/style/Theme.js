@@ -2,34 +2,26 @@ export const theme = {
 
     
     colors: {
-        /* general */
-        primary : '',
-        primaryAlpha : '',
-        secondary : ' ',
-        tertiary: '',
+        primary : '#507255',
+        secondary : '#26532B ',
+        tertiary: '#2CF6B3',
         black: '#000000',
         white: '#ffffff',
-        /* background */
         background: '#ffffff',
-        /* text */
         primaryTextColor: '#000000',
         secondaryTextColor: '#303030',
-        tertiaryTextColor: '', 
-        inputPlaceholder: '',
-        darkGrayText: '',
         
-        /* buttons */
         buttonsStateColors : {
-            hover : '' ,
-            active: "",
-            disabled : "",
-            focus: ""
+            hover : '#26532B' ,
+            active: "#507255",
+            disabled : "#303030",
+            focus: "#507255"
         },
         /* notifications */
         danger: '#FD3838',
         warning : '#FFA115',
         success: '#00644F',
-        /* bonus */
+
     },
     fonts: {
         primaryFont: 'Poppins',

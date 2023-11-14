@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useState } from "react";
 
 import { Route, Routes, useLocation } from "react-router-dom";
@@ -25,7 +25,7 @@ import Checkout from "../Cart/Checkout/Checkout";
 function App() {
   useEffect(() => {}, []);
 
-  const ScrollToTop: React.FC = () => {
+  const ScrollToTop= () => {
     const { pathname } = useLocation();
 
     useEffect(() => {

@@ -1,17 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useState } from 'react'
 import { NavLink, useNavigate} from 'react-router-dom';
 import {useSelector, useDispatch } from "react-redux";
 import axios from 'axios';
-import { ProductList, ProductCardProps } from '../../components/ui/ProductCard.tsx'
+import { ProductList } from '../../components/ui/ProductCard.jsx'
 
 
 /* style */
-import {StyledShop} from './shop.style.ts'
+import {StyledShop} from './shop.style.js'
 
 const Shop = () => {
 
-    const [products , setProducts] = useState<ProductCardProps[]>([])
+    const [products , setProducts] = useState([])
 
     
     useEffect(() => {

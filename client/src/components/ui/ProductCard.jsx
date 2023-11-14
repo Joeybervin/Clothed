@@ -4,16 +4,6 @@ import { useState } from "react";
 import {useSelector, useDispatch } from "react-redux";
 
 
-interface ProductCardProps {
-    category: string;
-    id: number;
-    name: string;
-    price: number;
-    inventory: number;
-    className?: string;
-    onClick?: () => void;
-}
-
 const ProductCardStyle = styled.div`
     display: flex;
     flex-direction: column;
@@ -49,14 +39,14 @@ const ProductCardStyle = styled.div`
 `;
 
 
-const ProductCard: React.FC<ProductCardProps> = ({
+const ProductCard = ({
     category,
     name,
     price,
     inventory,
     ...props
     }) => {
-    const [quantity, setQuantity] = useState<number>(0);
+    const [quantity, setQuantity] = useState(0);
 
     const handleIncrement = () => {
         setQuantity((prevQuantity) => prevQuantity + 1);
@@ -95,7 +85,7 @@ const ProductListStyle = styled.div`
     gap: 20px;
 `;
 
-const ProductList: React.FC<{ products: ProductCardProps[] }> = ({
+const ProductList= ({
     products,
     }) => {
     return (
@@ -116,5 +106,5 @@ const ProductList: React.FC<{ products: ProductCardProps[] }> = ({
     );
 };
 
-export { ProductCard, ProductList };    export type { ProductCardProps };
+export { ProductCard, ProductList };  
 

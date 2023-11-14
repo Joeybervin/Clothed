@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useState } from 'react'
 import { NavLink, useNavigate} from 'react-router-dom';
 import {useSelector, useDispatch } from "react-redux";
 
 /* style */
-import {StyledFooter} from './footer.style.ts'
+import {StyledFooter} from './footer.style.js'
 
 const Footer = () => {
 

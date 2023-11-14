@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useState } from 'react'
 import {useSelector, useDispatch } from "react-redux";
 
 /* style */
-import {StyledCheckout} from './checkout.style.js'
+import {StyledAdmin} from './admin.style.js'
 
-const Checkout = () => {
+const Admin = () => {
 
     /* _____________ HOOKS _____________ */
     useEffect(() => {
@@ -24,11 +24,12 @@ const Checkout = () => {
         <>
             <div>
             
-            <h1>Page Checkout</h1>
+            <h1>Page d'administration</h1>
             
             </div>
         </>
     );
 };
 
-export default Checkout;
+export default Admin;
+

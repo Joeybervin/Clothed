@@ -1,16 +1,16 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useState } from 'react'
 
 import { PiHighHeelLight, PiTShirtLight } from "react-icons/pi";
 import axios from 'axios';
-import {StyledHome} from './home.style.ts'
+import {StyledHome} from './home.style.js'
 
-import { ProductList, ProductCardProps } from '../../components/ui/ProductCard.tsx'
+import { ProductList } from '../../components/ui/ProductCard.jsx'
 
 const Home = () => {
 
 
-    const [products , setProducts] = useState<ProductCardProps[]>([])
+    const [products , setProducts] = useState([])
 
     
     useEffect(() => {

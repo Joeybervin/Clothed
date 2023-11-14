@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useState } from 'react'
 import {useSelector, useDispatch } from "react-redux";
 
 /* style */
-import {StyledContact} from './contact.style.js'
+import {StyledCheckout} from './checkout.style.js'
 
-const Contact = () => {
+const Checkout = () => {
 
     /* _____________ HOOKS _____________ */
     useEffect(() => {
@@ -24,11 +24,11 @@ const Contact = () => {
         <>
             <div>
             
-            <h1>Page Contact</h1>
+            <h1>Page Checkout</h1>
             
             </div>
         </>
     );
 };
 
-export default Contact;
+export default Checkout;

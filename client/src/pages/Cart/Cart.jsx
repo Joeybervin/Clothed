@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useState } from 'react'
 import {useSelector, useDispatch } from "react-redux";
 
 /* style */
-import {StyledAdmin} from './admin.style.ts'
+import {StyledCart} from './cart.style.js'
 
-const Admin = () => {
+const Cart = () => {
 
     /* _____________ HOOKS _____________ */
     useEffect(() => {
@@ -24,12 +24,11 @@ const Admin = () => {
         <>
             <div>
             
-            <h1>Page d'administration</h1>
+            <h1>Page Cart</h1>
             
             </div>
         </>
     );
 };
 
-export default Admin;
-
+export default Cart;

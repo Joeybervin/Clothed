@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useState } from 'react'
 import {useSelector, useDispatch } from "react-redux";
 
 /* style */
-import {StyledProfile} from './profile.style.ts';
+import {StyledContact} from './contact.style.js'
 
-const Profile = () => {
+const Contact = () => {
 
     /* _____________ HOOKS _____________ */
     useEffect(() => {
@@ -24,11 +24,11 @@ const Profile = () => {
         <>
             <div>
             
-            <h1>Page Profile</h1>
+            <h1>Page Contact</h1>
             
             </div>
         </>
     );
 };
 
-export default Profile;
+export default Contact;
